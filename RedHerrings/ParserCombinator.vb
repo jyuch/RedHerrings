@@ -25,6 +25,10 @@ Imports RedHerrings.Internal
 
 Namespace Global.RedHerrings
 
+    Public Class ParseException
+        Inherits Exception
+    End Class
+
     Public Interface IInput
         Inherits IEquatable(Of IInput)
         ReadOnly Property Source As String
@@ -163,10 +167,19 @@ Namespace Global.RedHerrings
         Public Function [Then](Of T, U)(first As Parser(Of T), second As Func(Of T, Parser(Of U))) As Parser(Of U)
             Return Function(i) first(i).IfSuccess(Function(s) second(s.Value)(s.Remainder))
         End Function
+
+
+        <Extension>
+        Public Function [Select](Of T, U)(parser As Parser(Of T), convert As Func(Of T, U)) As Parser(Of U)
+            If parser Is Nothing Then Throw New ArgumentNullException("parser")
+            If convert Is Nothing Then Throw New ArgumentNullException("convert")
+
+            Return parser.Then(Function(it) Parse.[Return](convert(it)))
+        End Function
     End Module
 
     Public Class Parse
-        Public Shared Function Text(t As String) As Parser(Of String)
+        Public Shared Function PString(t As String) As Parser(Of String)
             Return Function(input As IInput) As IResult(Of String)
                        If input.AtEnd Then
                            Return Result.Failure(Of String)(input)
@@ -180,7 +193,35 @@ Namespace Global.RedHerrings
                        End If
                    End Function
         End Function
+
+        Public Shared Function [Return](Of T)(value As T) As Parser(Of T)
+            Return Function(it) Result.Success(value, it)
+        End Function
     End Class
+
+    Public Module ParserExtensions
+        <Extension>
+        Public Function TryParse(Of T)(parser As Parser(Of T), input As String) As IResult(Of T)
+            If parser Is Nothing Then Throw New ArgumentNullException("parser")
+            If input Is Nothing Then Throw New ArgumentNullException("input")
+
+            Return parser(New Input(input))
+        End Function
+
+        <Extension>
+        Public Function Parse(Of T)(parser As Parser(Of T), input As String) As T
+            If parser Is Nothing Then Throw New ArgumentNullException("parser")
+            If input Is Nothing Then Throw New ArgumentNullException("input")
+
+            Dim result = TryParse(parser, input)
+
+            If result.WasSuccessful Then
+                Return result.Value
+            End If
+
+            Throw New ParseException()
+        End Function
+    End Module
 
 End Namespace
 
