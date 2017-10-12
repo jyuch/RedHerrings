@@ -168,13 +168,28 @@ Namespace Global.RedHerrings
             Return Function(i) first(i).IfSuccess(Function(s) second(s.Value)(s.Remainder))
         End Function
 
-
         <Extension>
         Public Function [Select](Of T, U)(parser As Parser(Of T), convert As Func(Of T, U)) As Parser(Of U)
             If parser Is Nothing Then Throw New ArgumentNullException("parser")
             If convert Is Nothing Then Throw New ArgumentNullException("convert")
 
             Return parser.Then(Function(it) Parse.[Return](convert(it)))
+        End Function
+
+        <Extension>
+        Public Function [Or](Of T)(first As Parser(Of T), second As Parser(Of T)) As Parser(Of T)
+            If first Is Nothing Then Throw New ArgumentNullException("")
+            If second Is Nothing Then Throw New ArgumentNullException("")
+
+            Return Function(it As IInput) As IResult(Of T)
+                       Dim fr = first(it)
+
+                       If Not fr.WasSuccessful Then
+                           Return second(it)
+                       End If
+
+                       Return fr
+                   End Function
         End Function
     End Module
 
