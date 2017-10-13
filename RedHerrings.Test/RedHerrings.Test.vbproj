@@ -96,6 +96,7 @@
     </Compile>
     <Compile Include="Parse\OrTests.vb" />
     <Compile Include="Parse\PStringTests.vb" />
+    <Compile Include="Parse\RegexTests.vb" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="My Project\Resources.resx">

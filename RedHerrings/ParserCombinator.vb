@@ -21,6 +21,7 @@
 'THE SOFTWARE.
 
 Imports System.Runtime.CompilerServices
+Imports System.Text.RegularExpressions
 Imports RedHerrings.Internal
 
 Namespace Global.RedHerrings
@@ -34,6 +35,7 @@ Namespace Global.RedHerrings
         ReadOnly Property Source As String
         ReadOnly Property AtEnd As Boolean
         ReadOnly Property Position As Integer
+        Function Advance() As IInput
     End Interface
 
     Public Class Input
@@ -86,6 +88,11 @@ Namespace Global.RedHerrings
             If other Is Me Then Return True
             If _source = other.Source AndAlso _position = other.Position Then Return True
             Return False
+        End Function
+
+        Public Function Advance() As IInput Implements IInput.Advance
+            If AtEnd Then Throw New InvalidOperationException("The input is already at the end of the source.")
+            Return New Input(Source, Position + 1)
         End Function
 
         Public Shared Operator =(left As Input, rigth As Input) As Boolean
@@ -211,6 +218,48 @@ Namespace Global.RedHerrings
 
         Public Shared Function [Return](Of T)(value As T) As Parser(Of T)
             Return Function(it) Result.Success(value, it)
+        End Function
+
+        Public Shared Function Regex(r As String) As Parser(Of String)
+            Return  Regex(New Regex(r))
+        End Function
+
+        Public Shared Function Regex(r As Regex) As Parser(Of String)
+            Return RegexMatch(r).Then(Function(it) [Return](it.Value))
+        End Function
+
+        Public Shared Function RegexMatch(r As String) As Parser(Of Match)
+            If r Is Nothing Then Throw New ArgumentNullException("r")
+            Return RegexMatch(r)
+        End Function
+
+        Public Shared Function RegexMatch(r As Regex) As Parser(Of Match)
+            If r Is Nothing Then Throw New ArgumentNullException("r")
+
+            r = OptimizeRegex(r)
+
+            Return Function(i As IInput) As IResult(Of Match)
+                       If Not i.AtEnd Then
+                           Dim input = i.Source.Substring(i.Position)
+                           Dim match = r.Match(input)
+                           Dim remainder = i
+
+                           If match.Success Then
+                               For j = 1 To match.Length
+                                   remainder = remainder.Advance()
+                               Next
+                               Return Result.Success(match, remainder)
+                           Else
+                               Return Result.Failure(Of Match)(i)
+                           End If
+                       Else
+                           Return Result.Failure(Of Match)(i)
+                       End If
+                   End Function
+        End Function
+
+        Private Shared Function OptimizeRegex(r As Regex) As Regex
+            Return New Regex(String.Format("^(?:{0})", r), r.Options)
         End Function
     End Class
 
