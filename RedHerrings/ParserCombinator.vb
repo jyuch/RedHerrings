@@ -182,6 +182,13 @@ Namespace Global.RedHerrings
 
             Return parser.Then(Function(it) Parse.[Return](convert(it)))
         End Function
+        
+        <Extension>
+        Public Function SelectMeny(Of T, U, V)(parser As Parser(Of T),
+                                               selecter As Func(Of T, Parser(Of U)),
+                                               projecter As Func(Of T, U, V)) As Parser(Of V)
+            Throw New NotImplementedException()
+        End Function
 
         <Extension>
         Public Function [Or](Of T)(first As Parser(Of T), second As Parser(Of T)) As Parser(Of T)
@@ -197,6 +204,21 @@ Namespace Global.RedHerrings
 
                        Return fr
                    End Function
+        End Function
+
+        <Extension>
+        Public Function Once(Of T)(parser As Parser(Of T)) As Parser(Of IEnumerable(Of T))
+            Throw New NotImplementedException()
+        End Function
+
+        <Extension>
+        Public Function Meny(Of T)(parser As Parser(Of T)) As Parser(Of IEnumerable(Of T))
+            Throw New NotImplementedException()
+        End Function
+
+        <Extension>
+        Public Function AtLeastOnce(Of T)(parser As Parser(Of T)) As Parser(Of IEnumerable(Of T))
+            Throw New NotImplementedException()
         End Function
     End Module
 
