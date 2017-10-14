@@ -184,7 +184,7 @@ Namespace Global.RedHerrings
         End Function
         
         <Extension>
-        Public Function SelectMeny(Of T, U, V)(parser As Parser(Of T),
+        Public Function SelectMany(Of T, U, V)(parser As Parser(Of T),
                                                selecter As Func(Of T, Parser(Of U)),
                                                projecter As Func(Of T, U, V)) As Parser(Of V)
             Throw New NotImplementedException()
