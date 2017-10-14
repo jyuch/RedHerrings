@@ -209,7 +209,11 @@ Namespace Global.RedHerrings
 
                        Dim x = StringHelper.Substring(input.Source, input.Position, t.Length)
                        If x = t Then
-                           Return Result.Success(x, New Input(input.Source, input.Position + t.Length))
+                           Dim remainder = input
+                           For i = 1 To t.Length
+                               remainder = remainder.Advance()
+                           Next
+                           Return Result.Success(x, remainder)
                        Else
                            Return Result.Failure(Of String)(input)
                        End If
@@ -221,7 +225,7 @@ Namespace Global.RedHerrings
         End Function
 
         Public Shared Function Regex(r As String) As Parser(Of String)
-            Return  Regex(New Regex(r))
+            Return Regex(New Regex(r))
         End Function
 
         Public Shared Function Regex(r As Regex) As Parser(Of String)
