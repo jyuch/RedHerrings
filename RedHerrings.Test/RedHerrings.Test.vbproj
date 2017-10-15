@@ -94,6 +94,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="Parse\AtLeastOnceTests.vb" />
     <Compile Include="Parse\ManyTests.vb" />
     <Compile Include="Parse\OnceTests.vb" />
     <Compile Include="Parse\OrTests.vb" />

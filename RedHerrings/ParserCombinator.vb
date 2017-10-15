@@ -242,7 +242,9 @@ Namespace Global.RedHerrings
 
         <Extension>
         Public Function AtLeastOnce(Of T)(parser As Parser(Of T)) As Parser(Of IEnumerable(Of T))
-            Throw New NotImplementedException()
+            If parser Is Nothing Then Throw New ArgumentNullException("parser")
+
+            Return parser.Once().Then(Function(t1) parser.Many().Select(Function(ts) t1.Concat(ts)))
         End Function
     End Module
 
