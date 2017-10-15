@@ -208,7 +208,9 @@ Namespace Global.RedHerrings
 
         <Extension>
         Public Function Once(Of T)(parser As Parser(Of T)) As Parser(Of IEnumerable(Of T))
-            Throw New NotImplementedException()
+            If parser Is Nothing Then Throw New ArgumentNullException("parser")
+
+            Return parser.Select(Function(it) DirectCast({it}, IEnumerable(Of T)))
         End Function
 
         <Extension>
