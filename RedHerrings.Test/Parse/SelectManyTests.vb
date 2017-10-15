@@ -3,7 +3,7 @@
 Public Class SelectManyTests
 
     <Fact>
-    Public Sub SelectMany_can_use_query()
+    Public Sub SelectMany_can_use_in_query_syntax()
         Dim p = From a In Parse.PString("Hello")
                 From b In Parse.PString(" ")
                 From c In Parse.PString("World")
