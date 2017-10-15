@@ -182,12 +182,12 @@ Namespace Global.RedHerrings
 
             Return parser.Then(Function(it) Parse.[Return](convert(it)))
         End Function
-        
+
         <Extension>
         Public Function SelectMany(Of T, U, V)(parser As Parser(Of T),
                                                selecter As Func(Of T, Parser(Of U)),
                                                projecter As Func(Of T, U, V)) As Parser(Of V)
-            Throw New NotImplementedException()
+            Return parser.Then(Function(it) selecter(it).Select(Function(ut) projecter(it, ut)))
         End Function
 
         <Extension>
