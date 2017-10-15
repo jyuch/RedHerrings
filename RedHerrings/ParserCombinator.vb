@@ -214,8 +214,30 @@ Namespace Global.RedHerrings
         End Function
 
         <Extension>
-        Public Function Meny(Of T)(parser As Parser(Of T)) As Parser(Of IEnumerable(Of T))
-            Throw New NotImplementedException()
+        Public Function Many(Of T)(parser As Parser(Of T)) As Parser(Of IEnumerable(Of T))
+            If parser Is Nothing Then Throw New ArgumentNullException("parser")
+
+            Return Function(i As IInput) As IResult(Of IEnumerable(Of T))
+                       Dim remainder = i
+                       Dim res = New List(Of T)
+
+                       While (True)
+                           Dim r = parser(remainder)
+
+                           If Not r.WasSuccessful Then
+                               Exit While
+                           End If
+
+                           If remainder.Equals(r.Remainder) Then
+                               Exit While
+                           End If
+
+                           res.Add(r.Value)
+                           remainder = r.Remainder
+                       End While
+
+                       Return Result.Success(res, remainder)
+                   End Function
         End Function
 
         <Extension>
