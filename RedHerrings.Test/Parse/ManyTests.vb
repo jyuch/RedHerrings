@@ -13,6 +13,7 @@ Public Class ManyTests
         Assert.Equal(expectedRemainder, actual.Remainder)
     End Sub
 
+    <Fact>
     Public Sub Meny_return_one_count_result()
         Dim p = Parse.PString("Hoge").Many()
         Dim expectedResult As IEnumerable(Of String) = {"Hoge"}
