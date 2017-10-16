@@ -176,6 +176,22 @@ Namespace Global.RedHerrings
         End Function
 
         <Extension>
+        Public Function [End](Of T)(parser As Parser(Of T)) As Parser(Of T)
+            If parser Is Nothing Then Throw New ArgumentNullException("parser")
+
+            Return Function(it As IInput) As IResult(Of T)
+                       Return parser(it).IfSuccess(Function(s As IResult(Of T)) As IResult(Of T)
+                                                       If s.Remainder.AtEnd Then
+                                                           Return s
+                                                       Else
+                                                           Return Result.Failure(Of T)(s.Remainder)
+                                                       End If
+                                                   End Function)
+                   End Function
+        End Function
+
+
+        <Extension>
         Public Function [Select](Of T, U)(parser As Parser(Of T), convert As Func(Of T, U)) As Parser(Of U)
             If parser Is Nothing Then Throw New ArgumentNullException("parser")
             If convert Is Nothing Then Throw New ArgumentNullException("convert")
