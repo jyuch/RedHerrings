@@ -10,7 +10,7 @@ Public Class EndTests
     End Sub
 
     <Fact>
-    Public Sub End_failure_when__not_reach_end_of_source()
+    Public Sub End_failure_when_not_reach_end_of_source()
         Dim p = Parse.PString("Hello").End()
         Dim actual = p.TryParse("Hello World")
         Assert.False(actual.WasSuccessful)
