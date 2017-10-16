@@ -167,7 +167,7 @@ Namespace Global.RedHerrings
         End Function
     End Class
 
-    Public Delegate Function Parser(Of T)(input As IInput) As IResult(Of T)
+    Public Delegate Function Parser(Of Out T)(input As IInput) As IResult(Of T)
 
     Public Module ParseModule
         <Extension>
