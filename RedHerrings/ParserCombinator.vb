@@ -172,6 +172,9 @@ Namespace Global.RedHerrings
     Public Module ParseModule
         <Extension>
         Public Function [Then](Of T, U)(first As Parser(Of T), second As Func(Of T, Parser(Of U))) As Parser(Of U)
+            If first Is Nothing Then Throw New ArgumentNullException("first")
+            If second Is Nothing Then Throw New ArgumentNullException("second")
+
             Return Function(i) first(i).IfSuccess(Function(s) second(s.Value)(s.Remainder))
         End Function
 
@@ -203,6 +206,10 @@ Namespace Global.RedHerrings
         Public Function SelectMany(Of T, U, V)(parser As Parser(Of T),
                                                selecter As Func(Of T, Parser(Of U)),
                                                projecter As Func(Of T, U, V)) As Parser(Of V)
+            If parser Is Nothing Then Throw New ArgumentNullException("parser")
+            If selecter Is Nothing Then Throw New ArgumentNullException("selecter")
+            If projecter Is Nothing Then Throw New ArgumentNullException("projecter")
+
             Return parser.Then(Function(it) selecter(it).Select(Function(ut) projecter(it, ut)))
         End Function
 
@@ -266,6 +273,8 @@ Namespace Global.RedHerrings
 
     Public Class Parse
         Public Shared Function PString(t As String) As Parser(Of String)
+            If t Is Nothing Then Throw New ArgumentNullException("t")
+
             Return Function(input As IInput) As IResult(Of String)
                        If input.AtEnd Then
                            Return Result.Failure(Of String)(input)
@@ -289,10 +298,12 @@ Namespace Global.RedHerrings
         End Function
 
         Public Shared Function Regex(r As String) As Parser(Of String)
+            If r Is Nothing Then Throw New ArgumentNullException("r")
             Return Regex(New Regex(r))
         End Function
 
         Public Shared Function Regex(r As Regex) As Parser(Of String)
+            If r Is Nothing Then Throw New ArgumentNullException("r")
             Return RegexMatch(r).Then(Function(it) [Return](it.Value))
         End Function
 
